@@ -27,7 +27,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            
+     
             <Image Grid.Column="0" Margin="5" x:Name="HambImg"
                    Source="/Icons/Hamb.png"
                    HorizontalAlignment="Left"
@@ -61,16 +61,26 @@
                         
                         <!--Star posts-->
                         <Grid Grid.Row="0">
-                            <Button Height="90" Width="90" 
+                            <Button Height="80" Width="80" 
                                     HorizontalAlignment="Left" 
-                                    Margin="10,0,0,0"/>
+                                    Margin="10,0,0,0"
+                                    BorderThickness="0" Style="{StaticResource ButtonStyle1}">
+                                <Button.Background>
+                                    <ImageBrush Stretch="Fill" ImageSource="/Icons/Star.png"/>
+                                </Button.Background>
+                            </Button>
                         </Grid>
                         
                         <!--Dreams posts-->
                         <Grid Grid.Row="1">
-                            <Button Height="90" Width="90"
+                            <Button Height="80" Width="80"
                                     HorizontalAlignment="Left"
-                                    Margin="10,0,0,0"/>
+                                    Margin="10,0,0,0"
+                                    BorderThickness="0">
+                                <Button.Background>
+                                    <ImageBrush Stretch="Fill" ImageSource="/Icons/Moon.png"/>
+                                </Button.Background>
+                            </Button>
                         </Grid>
                        
                         <!--Info--> 

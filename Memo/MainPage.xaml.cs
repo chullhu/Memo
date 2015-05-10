@@ -23,9 +23,20 @@ namespace Memo
         private void HambImg_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
             if (DrawerLayout.IsDrawerOpen)
-                DrawerLayout.CloseDrawer();
+                DrawerLayout.CloseDrawer(); 
             else
                 DrawerLayout.OpenDrawer();
+        }
+
+        private void MainPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            base.OnBackKeyPress(e);
+
+            if (DrawerLayout.IsDrawerOpen)
+            {
+                DrawerLayout.CloseDrawer();
+                e.Cancel = true;
+            }
         }
 
         
