@@ -7,11 +7,22 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Memo.Resources;
+using System.IO;
+using Windows.Storage;
+using SQLite;
+using Memo.Model;
+using System.Threading.Tasks;
+using System.IO.IsolatedStorage;
 
 namespace Memo
 {
     public partial class App : Application
     {
+        /// <summary>
+        /// Имя БД
+        /// </summary>
+        public static string DB_PATH = Path.Combine(Path.Combine(ApplicationData.Current.LocalFolder.Path, "Journal.sqlite"));
+
         /// <summary>
         /// Обеспечивает быстрый доступ к корневому кадру приложения телефона.
         /// </summary>
@@ -55,12 +66,66 @@ namespace Memo
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 
+            if (!CheckFileExists("Journal.sqlite").Result)
+            {
+                using (var db = new SQLiteConnection(DB_PATH))
+                {
+                    db.CreateTable<Dreams>();
+                    //db.CreateTable<Notes>();
+                }
+            }
+
+            
+        }
+
+        private async Task<bool> CheckFileExists(string fileName)
+        {
+            try
+            {
+                var store = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(fileName);
+                return true;
+            }
+            catch
+            {
+            }
+            return false;
         }
 
         // Код для выполнения при запуске приложения (например, из меню "Пуск")
         // Этот код не будет выполняться при повторной активации приложения
-        private void Application_Launching(object sender, LaunchingEventArgs e)
+        private async void Application_Launching(object sender, LaunchingEventArgs e)
         {
+            StorageFile MyDBFile = null;
+            try
+            {
+                // Read the db file from DB path
+                MyDBFile = await StorageFile.GetFileFromPathAsync(DB_PATH);
+            }
+            catch (FileNotFoundException)
+            {
+                if (MyDBFile == null)
+                {
+                    // Copy file from installation folder to local folder.
+                    IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication();
+                    // Create a stream for the file in the installation folder.
+                    using (Stream input = Application.GetResourceStream(new Uri("Journal.sqlite", UriKind.Relative)).Stream)
+                    {
+                        // Create a stream for the new file in the local folder.
+                        using (IsolatedStorageFileStream output = iso.CreateFile(DB_PATH))
+                        {
+                            // Initialize the buffer.
+                            byte[] readBuffer = new byte[4096];
+                            int bytesRead = -1;
+
+                            // Copy the file from the installation folder to the local folder. 
+                            while ((bytesRead = input.Read(readBuffer, 0, readBuffer.Length)) > 0)
+                            {
+                                output.Write(readBuffer, 0, bytesRead);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Код для выполнения при активации приложения (переводится в основной режим)
